@@ -3,9 +3,11 @@ import './App.css';
 import React, {Component} from 'react';
 import data from './data';
 
-import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
+//import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
+//import 'react-bootstrap-table/css/react-bootstrap-table.css'
+import 'react-bootstrap-table/dist/react-bootstrap-table.js'
 import "bootstrap/dist/css/bootstrap.min.css"
-import {BootstrapTable, TableHeaderColumn,NoDataTable} from 'react-bootstrap-table';
+import { BootstrapTable, TableHeaderColumn,ClearSearchButton ,TrClassStringTable  } from 'react-bootstrap-table';
 import { Jumbotron,Button ,Badge, Container,Label 
   ,Panel,FormControl ,FormGroup,Col,ControlLabel,ListGroup ,ListGroupItem,Glyphicon, Table } from 'react-bootstrap';
   class App extends Component {
@@ -26,20 +28,39 @@ import { Jumbotron,Button ,Badge, Container,Label
     return true;
   }
 
+  trStyle = (row, rowIndex) => {
+    return { backgroundColor: '#31698a',
+             color: '#ffffff'  };
+  }
   
      render() {
       const childTypes = [ 'น้องบิว', 'น้องคิม', 'น้องฝน', 'คิมเบอร์รี่' ];
       const cellEditProps = {
         mode: 'click',
-       /* blurToSave: true*/
       };
-      function lastNamevalidate(value, row) {
-        const nan = length.value ===0
-       if (nan)
-         return ' lastName can not be null !'
-       else
-        return true;
+      
+      const options  ={
+        clearSearch: true,
+        searchPosition: 'left'
       }
+
+     
+      function  columnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
+          // fieldValue is column value
+          // row is whole row object
+          // rowIdx is index of row
+          // colIdx is index of column
+          return rowIdx % 2 === 0 ? 'td-column-function-even-example' : 'td-column-function-odd-example';
+        }
+ 
+       
+      function rowClassNameFormat(row, rowIdx) {
+        // row is whole row object
+        // rowIdx is index of row
+        return rowIdx % 2 === 0 ? 'td-column-function-even-example' : 'td-column-function-odd-example';
+      }
+        
+      
       
        let {inputdata} = this.state
        return <div>
@@ -72,30 +93,52 @@ import { Jumbotron,Button ,Badge, Container,Label
             )})}
            </tbody>
          </Table> 
-                  
+                   
          <form>   
            
             <BootstrapTable data={data().filter(data =>  this.checkMathText(data))} 
-              search={true}
               cellEdit={cellEditProps }
-              bordered ={ false }  
-              options={{ noDataText: 'Data not found ' ,
-                        clearSearch: true}} 
-              insertRow={ true }          
-              striped hover condensed>
-              <TableHeaderColumn isKey dataField='name'isKey={ true } dataSort={ true }  thStyle={ { 'fontWeight': 'bolder' }}
-              >name</TableHeaderColumn>
-              <TableHeaderColumn dataField='lastName' thStyle={ { 'fontWeight': 'lighter' }}
-              editable={ { type: 'textarea',
-              validator:(lastNamevalidate)}}
-              >lastName</TableHeaderColumn>
-              <TableHeaderColumn dataField='birthDay' dataAlign='center' 
-               editColumnClassName='p-0' editorClass='input-xs' editable={{ type: 'date' }} >birthDay</TableHeaderColumn>
-              <TableHeaderColumn dataField='child'  filter={ { type: 'TextFilter' }}
-              editable={ { type: 'select'} }>child</TableHeaderColumn>
+              options={{ noDataText: 'Data not found ' } } 
+              options={ options } search              
+              insertRow  
+              exportCSV
+              deleteRow
+              pagination 
+              trStyle={ this.trStyle }
+              >
+              <TableHeaderColumn isKey dataField='name' 
+              dataSort={ true }>name</TableHeaderColumn>
+              <TableHeaderColumn dataField='lastName' 
+              editable={ { type: 'textarea'}}>lastName</TableHeaderColumn>
+              <TableHeaderColumn dataField='birthDay' 
+               dataAlign='center' 
+               editable={{ type: 'date' }} >birthDay</TableHeaderColumn>
+              <TableHeaderColumn dataField='child'  
+                filter   ={ { type: 'TextFilter' }} 
+                editable ={ { type: 'select',options: { values: childTypes }} }>child</TableHeaderColumn>
               <TableHeaderColumn dataField='childAge' dataAlign='center'
-               editColumnClassName='p-0' editorClass='input-xs' editable={{ type: 'number' }} >childAge</TableHeaderColumn>
+                columnClassName={ this.columnClassNameFormat }
+
+               editable={{ type: 'number' }} >childAge</TableHeaderColumn>
             </BootstrapTable>
+
+
+
+
+
+            <BootstrapTable data={ data() } 
+           /*  containerStyle={ { background: '#00ff00' } }
+            /* tableStyle={ { background: '#00ffff' } } */
+           /* bodyStyle={ { background: '#00ff00' } }
+           /*  headerStyle={ { background: '#00ffff' } }*/
+          /* containerClass='my-custom-class'*/
+          trClassName={this.rowClassNameFormat}
+          >
+          <TableHeaderColumn dataField='name' isKey={ true }>Product ID</TableHeaderColumn>
+          <TableHeaderColumn dataField='lastName' className='td-header-string-example'>Product Name</TableHeaderColumn>
+          <TableHeaderColumn dataField='childAge' columnClassName={ columnClassNameFormat }>Product Price</TableHeaderColumn>
+      </BootstrapTable>
+        
          </form>
          </div>
             
